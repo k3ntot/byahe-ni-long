@@ -1,20 +1,40 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { galleryPhotos } from '../config/gallery'
 import useScrollReveal from '../hooks/useScrollReveal'
 
-// Each card fades + slides up with a staggered delay based on its index
+// Each card uses its own Intersection Observer so it only animates
+// when it actually scrolls into view — not all at once on open.
 function GalleryCard({ photo, index }) {
   const [hidden, setHidden] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Small extra stagger for cards that appear in the same row
+          const rowDelay = (index % 4) * 80
+          setTimeout(() => setVisible(true), rowDelay)
+          observer.unobserve(el)
+        }
+      },
+      { threshold: 0.15 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [index])
 
   if (hidden) return null
 
-  // Stagger: each card delays by 60ms × its position, capped at 720ms
-  const delay = Math.min(index * 60, 720)
-
   return (
     <div
-      className="gallery-card gallery-card--animate"
-      style={{ animationDelay: `${delay}ms` }}
+      ref={ref}
+      className={`gallery-card gallery-card--scroll${visible ? ' gallery-card--visible' : ''}`}
     >
       <img
         src={`/images/${photo.src}`}
