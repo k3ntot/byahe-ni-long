@@ -2,17 +2,19 @@ import { useState } from 'react'
 import { galleryPhotos } from '../config/gallery'
 import useScrollReveal from '../hooks/useScrollReveal'
 
-// Cards auto-hide if the image file is missing
-// Each card fades + slides up as it enters the viewport
-function GalleryCard({ photo }) {
+// Each card fades + slides up with a staggered delay based on its index
+function GalleryCard({ photo, index }) {
   const [hidden, setHidden] = useState(false)
-  const [ref, isVisible] = useScrollReveal({ threshold: 0.1 })
 
   if (hidden) return null
+
+  // Stagger: each card delays by 60ms × its position, capped at 720ms
+  const delay = Math.min(index * 60, 720)
+
   return (
     <div
-      ref={ref}
-      className={`gallery-card reveal${isVisible ? ' is-visible' : ''}`}
+      className="gallery-card gallery-card--animate"
+      style={{ animationDelay: `${delay}ms` }}
     >
       <img
         src={`/images/${photo.src}`}
@@ -41,8 +43,8 @@ export default function Gallery({ visible, onClose }) {
           </h2>
         </div>
         <div className="gallery-grid">
-          {galleryPhotos.map((photo) => (
-            <GalleryCard key={photo.src} photo={photo} />
+          {galleryPhotos.map((photo, index) => (
+            <GalleryCard key={photo.src} photo={photo} index={index} />
           ))}
         </div>
         <div className="gallery__footer">

@@ -320,6 +320,24 @@ h1, h2, h3 {
   }
 }
 
+/* Gallery card stagger animation — fires when gallery is revealed */
+.gallery-card--animate {
+  opacity: 0;
+  animation: cardFadeUp 0.5s ease forwards;
+}
+
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Hover lift — keep on top of animation */
 .gallery-card {
   border-radius: var(--radius-card);
   overflow: hidden;
