@@ -17,7 +17,7 @@ function GalleryCard({ photo, index }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           // Small extra stagger for cards that appear in the same row
-          const rowDelay = (index % 4) * 80
+          const rowDelay = (index % 4) * 120
           setTimeout(() => setVisible(true), rowDelay)
           observer.unobserve(el)
         }
