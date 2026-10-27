@@ -109,6 +109,40 @@ h1, h2, h3 {
 }
 
 /* ============================================================
+   Scroll Reveal Animations
+   ============================================================ */
+
+/* Base hidden state — applied before element enters viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* Triggered when element enters viewport */
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slight delay variants for staggering child elements */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* Gallery gets a more dramatic entrance */
+.reveal-gallery {
+  opacity: 0;
+  transform: translateY(48px) scale(0.98);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-gallery.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ============================================================
    Hero
    ============================================================ */
 
@@ -120,6 +154,28 @@ h1, h2, h3 {
   padding: 80px 24px 64px;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Staggered entrance animation for hero children */
+.hero__animate {
+  opacity: 0;
+  animation: heroFadeUp 0.7s ease forwards;
+}
+
+.hero__animate--1 { animation-delay: 0.1s; }
+.hero__animate--2 { animation-delay: 0.25s; }
+.hero__animate--3 { animation-delay: 0.4s; }
+.hero__animate--4 { animation-delay: 0.55s; }
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero__profile-wrap {

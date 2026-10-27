@@ -1,5 +1,6 @@
 import { FiPhone } from 'react-icons/fi'
 import { FaFacebook } from 'react-icons/fa'
+import useScrollReveal from '../hooks/useScrollReveal'
 
 const PHONE_NUMBER = '0956 092 9225'
 const PHONE_TEL = 'tel:09560929225'
@@ -7,9 +8,14 @@ const PHONE_SMS = 'sms:09560929225'
 const FACEBOOK_URL = 'https://www.facebook.com/ByaheNiLong'
 
 export default function Contact() {
+  const [ref, isVisible] = useScrollReveal()
+
   return (
     <section id="contact" className="contact">
-      <div className="contact__inner">
+      <div
+        ref={ref}
+        className={`contact__inner reveal${isVisible ? ' is-visible' : ''}`}
+      >
         <h2 className="contact__heading">Get in Touch</h2>
         <p className="contact__subtext">
           Want to ask about a destination or a trip? Reach out anytime.
