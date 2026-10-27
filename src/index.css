@@ -602,3 +602,81 @@ h1, h2, h3 {
   font-size: 0.8125rem;
   color: #aaa;
 }
+
+/* ============================================================
+   Lightbox
+   ============================================================ */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: lightboxFadeIn 0.25s ease;
+  cursor: zoom-out;
+}
+
+@keyframes lightboxFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+}
+
+.lightbox__close:hover {
+  opacity: 1;
+}
+
+.lightbox__img-wrap {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: lightboxImgIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: default;
+}
+
+@keyframes lightboxImgIn {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lightbox__img {
+  max-width: min(90vw, 1000px);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  display: block;
+}
+
+/* Make gallery cards show a pointer so they feel clickable */
+.gallery-card {
+  cursor: pointer;
+}

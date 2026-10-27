@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { galleryPhotos } from '../config/gallery'
 import useScrollReveal from '../hooks/useScrollReveal'
+import Lightbox from './Lightbox'
 
-// Split photos into rows of 4
 function chunkArray(arr, size) {
   const chunks = []
   for (let i = 0; i < arr.length; i += size) {
@@ -11,15 +11,13 @@ function chunkArray(arr, size) {
   return chunks
 }
 
-// A whole row of cards that animate in together when the row enters the viewport
-function GalleryRow({ photos, rowIndex }) {
+function GalleryRow({ photos, onImageClick }) {
   const [visible, setVisible] = useState(false)
   const ref = useRef(null)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,7 +27,6 @@ function GalleryRow({ photos, rowIndex }) {
       },
       { threshold: 0.2 }
     )
-
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
@@ -42,21 +39,26 @@ function GalleryRow({ photos, rowIndex }) {
           photo={photo}
           visible={visible}
           delay={colIndex * 120}
+          onImageClick={onImageClick}
         />
       ))}
     </div>
   )
 }
 
-function GalleryCard({ photo, visible, delay }) {
+function GalleryCard({ photo, visible, delay, onImageClick }) {
   const [hidden, setHidden] = useState(false)
-
   if (hidden) return null
 
   return (
     <div
       className={`gallery-card gallery-card--scroll${visible ? ' gallery-card--visible' : ''}`}
       style={{ transitionDelay: visible ? `${delay}ms` : '0ms' }}
+      onClick={() => onImageClick(photo)}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${photo.alt}`}
+      onKeyDown={(e) => e.key === 'Enter' && onImageClick(photo)}
     >
       <img
         src={`/images/${photo.src}`}
@@ -70,6 +72,7 @@ function GalleryCard({ photo, visible, delay }) {
 
 export default function Gallery({ visible, onClose }) {
   const [headingRef, headingVisible] = useScrollReveal()
+  const [lightboxPhoto, setLightboxPhoto] = useState(null)
   const rows = chunkArray(galleryPhotos, 4)
 
   if (!visible) return null
@@ -87,7 +90,11 @@ export default function Gallery({ visible, onClose }) {
         </div>
         <div className="gallery-rows">
           {rows.map((rowPhotos, rowIndex) => (
-            <GalleryRow key={rowIndex} photos={rowPhotos} rowIndex={rowIndex} />
+            <GalleryRow
+              key={rowIndex}
+              photos={rowPhotos}
+              onImageClick={setLightboxPhoto}
+            />
           ))}
         </div>
         <div className="gallery__footer">
@@ -96,6 +103,14 @@ export default function Gallery({ visible, onClose }) {
           </button>
         </div>
       </div>
+
+      {lightboxPhoto && (
+        <Lightbox
+          src={`/images/${lightboxPhoto.src}`}
+          alt={lightboxPhoto.alt}
+          onClose={() => setLightboxPhoto(null)}
+        />
+      )}
     </section>
   )
 }
