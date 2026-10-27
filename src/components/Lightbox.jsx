@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
-export default function Lightbox({ src, alt, onClose }) {
+function LightboxContent({ src, alt, onClose }) {
   // Close on Escape key
   useEffect(() => {
     function handleKey(e) {
@@ -10,7 +11,7 @@ export default function Lightbox({ src, alt, onClose }) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [onClose])
 
-  // Prevent body scroll while open
+  // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -29,10 +30,18 @@ export default function Lightbox({ src, alt, onClose }) {
       </button>
       <div
         className="lightbox__img-wrap"
-        onClick={(e) => e.stopPropagation()} // clicking the image itself doesn't close
+        onClick={(e) => e.stopPropagation()}
       >
         <img src={src} alt={alt} className="lightbox__img" />
       </div>
     </div>
+  )
+}
+
+export default function Lightbox({ src, alt, onClose }) {
+  // Portal renders into document.body — fully escapes the gallery DOM
+  return createPortal(
+    <LightboxContent src={src} alt={alt} onClose={onClose} />,
+    document.body
   )
 }
