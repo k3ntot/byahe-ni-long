@@ -2,10 +2,17 @@ import { useState, useEffect, useRef } from 'react'
 import { galleryPhotos } from '../config/gallery'
 import useScrollReveal from '../hooks/useScrollReveal'
 
-// Each card uses its own Intersection Observer so it only animates
-// when it actually scrolls into view — not all at once on open.
-function GalleryCard({ photo, index }) {
-  const [hidden, setHidden] = useState(false)
+// Split photos into rows of 4
+function chunkArray(arr, size) {
+  const chunks = []
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size))
+  }
+  return chunks
+}
+
+// A whole row of cards that animate in together when the row enters the viewport
+function GalleryRow({ photos, rowIndex }) {
   const [visible, setVisible] = useState(false)
   const ref = useRef(null)
 
@@ -16,25 +23,40 @@ function GalleryCard({ photo, index }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Small extra stagger for cards that appear in the same row
-          const rowDelay = (index % 4) * 120
-          setTimeout(() => setVisible(true), rowDelay)
+          setVisible(true)
           observer.unobserve(el)
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.2 }
     )
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [index])
+  }, [])
+
+  return (
+    <div ref={ref} className="gallery-row">
+      {photos.map((photo, colIndex) => (
+        <GalleryCard
+          key={photo.src}
+          photo={photo}
+          visible={visible}
+          delay={colIndex * 120}
+        />
+      ))}
+    </div>
+  )
+}
+
+function GalleryCard({ photo, visible, delay }) {
+  const [hidden, setHidden] = useState(false)
 
   if (hidden) return null
 
   return (
     <div
-      ref={ref}
       className={`gallery-card gallery-card--scroll${visible ? ' gallery-card--visible' : ''}`}
+      style={{ transitionDelay: visible ? `${delay}ms` : '0ms' }}
     >
       <img
         src={`/images/${photo.src}`}
@@ -48,6 +70,7 @@ function GalleryCard({ photo, index }) {
 
 export default function Gallery({ visible, onClose }) {
   const [headingRef, headingVisible] = useScrollReveal()
+  const rows = chunkArray(galleryPhotos, 4)
 
   if (!visible) return null
 
@@ -62,9 +85,9 @@ export default function Gallery({ visible, onClose }) {
             Travel Memories
           </h2>
         </div>
-        <div className="gallery-grid">
-          {galleryPhotos.map((photo, index) => (
-            <GalleryCard key={photo.src} photo={photo} index={index} />
+        <div className="gallery-rows">
+          {rows.map((rowPhotos, rowIndex) => (
+            <GalleryRow key={rowIndex} photos={rowPhotos} rowIndex={rowIndex} />
           ))}
         </div>
         <div className="gallery__footer">

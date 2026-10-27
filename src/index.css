@@ -320,16 +320,40 @@ h1, h2, h3 {
   }
 }
 
-/* Gallery card scroll-reveal — each card animates when it enters the viewport */
+/* Gallery card scroll-reveal — each card animates when its row enters the viewport */
 .gallery-card--scroll {
   opacity: 0;
-  transform: translateY(56px) scale(0.94);
-  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(60px) scale(0.93);
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .gallery-card--scroll.gallery-card--visible {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+/* Row-based layout — replaces the flat grid when row grouping is active */
+.gallery-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gallery-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .gallery-rows {
+    gap: 20px;
+  }
+  .gallery-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
 }
 
 /* Hover lift — keep on top of animation */
